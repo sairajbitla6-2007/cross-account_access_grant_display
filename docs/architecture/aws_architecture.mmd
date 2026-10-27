@@ -1,0 +1,35 @@
+---
+config:
+  layout: dagre
+---
+flowchart TD
+    A["MQTT Client<br/>AWS IoT Core Test Client"]
+
+    subgraph AWS["AWS Cloud — us-east-1"]
+        B["AWS IoT Core<br/>MQTT Request Topic<br/>crossaccount/request"]
+        C["AWS IoT Rule<br/>CrossAccountTriggerRule"]
+        D["AWS Lambda<br/>CrossAccountAccessLambda"]
+        E["AWS STS<br/>Get Caller Identity"]
+        F[("Amazon S3<br/>access-grant-demo-150202114394-2026<br/>access-results/")]
+        G["MQTT Response Topic<br/>crossaccount/response"]
+
+        B --> C
+        C --> D
+        D --> E
+        D --> F
+        D --> G
+    end
+
+    H["Python Streamlit Dashboard<br/>Request History and Metrics<br/>30-second Auto-refresh"]
+
+    A -->|"Publish request"| B
+    G -->|"Publish response"| A
+    F -->|"Read stored JSON results"| H
+
+    classDef aws fill:#EAF3FF,stroke:#3973AC,color:#163A5C,stroke-width:1.5px
+    classDef storage fill:#E5F5E8,stroke:#399653,color:#174D27,stroke-width:1.5px
+    classDef client fill:#F3F4F6,stroke:#6B7280,color:#111827,stroke-width:1.5px
+
+    class B,C,D,E,G aws
+    class F storage
+    class A,H client

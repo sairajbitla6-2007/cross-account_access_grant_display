@@ -1,0 +1,5 @@
+streamlit==1.63.0
+boto3==1.43.118
+pandas==2.3.3
+plotly
+streamlit-autorefresh==1.0.1

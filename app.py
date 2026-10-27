@@ -450,7 +450,11 @@ try:
     for record in records:
         rows.append(
             {
-                "Request ID": record.get("requestId", "Unknown"),
+                "Request ID": (
+                     record.get("requestId")
+                     if record.get("requestId") is not None
+                     else "Missing"
+                ),
                 "Timestamp": record.get("timestamp", ""),
                 "Overall Status": record.get("status", "Unknown"),
                 "S3 Access": record.get("s3Access", "Unknown"),

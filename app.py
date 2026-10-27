@@ -328,7 +328,17 @@ with st.sidebar:
 
 @st.cache_resource
 def get_s3_client():
-    return boto3.client("s3", region_name=AWS_REGION)
+    try:
+        return boto3.client(
+               "s3",
+               region_name=AWS_REGION,
+               aws_access_key_id=st.secrets["AWS_ACCESS_KEY_ID"],
+               aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"],
+               aws_session_token=st.secrets["AWS_SESSION_TOKEN"],
+        )
+    except (KeyError, FileNotFoundError):
+        return boto3.client("s3", region_name=AWS_REGION)
+
 
 
 # =========================================================

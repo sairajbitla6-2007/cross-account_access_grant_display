@@ -6,30 +6,46 @@ flowchart TD
     A["MQTT Client<br/>AWS IoT Core Test Client"]
 
     subgraph AWS["AWS Cloud — us-east-1"]
-        B["AWS IoT Core<br/>MQTT Request Topic<br/>crossaccount/request"]
+        B["AWS IoT Core<br/>Request topic:<br/>crossaccount/request"]
         C["AWS IoT Rule<br/>CrossAccountTriggerRule"]
         D["AWS Lambda<br/>CrossAccountAccessLambda"]
+        V{"Validate requestId"}
+        X["Invalid request<br/>FAILURE<br/>Identity/S3 checks skipped"]
         E["AWS STS<br/>Get Caller Identity"]
+        S{"S3 access check"}
         F[("Amazon S3<br/>access-grant-demo-150202114394-2026<br/>access-results/")]
+        R["Build processing result<br/>Include validation / identity / access status"]
         G["MQTT Response Topic<br/>crossaccount/response"]
 
         B --> C
         C --> D
-        D --> E
-        D --> F
-        D --> G
+        D --> V
+        V -->|"Invalid"| X
+        V -->|"Valid"| E
+        E --> S
+        S -->|"Check result recorded"| R
+        X --> R
+        R --> F
+        R --> G
     end
 
-    H["Python Streamlit Dashboard<br/>Request History and Metrics<br/>30-second Auto-refresh"]
+    H["Streamlit Dashboard<br/>Request history, metrics, details, CSV export<br/>30-second auto-refresh"]
 
     A -->|"Publish request"| B
-    G -->|"Publish response"| A
+    G -->|"Response message"| A
     F -->|"Read stored JSON results"| H
+
+    N["Scope note:<br/>Prototype validates requests and checks identity/S3 access<br/>Full cross-account role assumption is not verified"]
+    H -.-> N
 
     classDef aws fill:#EAF3FF,stroke:#3973AC,color:#163A5C,stroke-width:1.5px
     classDef storage fill:#E5F5E8,stroke:#399653,color:#174D27,stroke-width:1.5px
     classDef client fill:#F3F4F6,stroke:#6B7280,color:#111827,stroke-width:1.5px
+    classDef decision fill:#FFF4D6,stroke:#B7791F,color:#5F370E,stroke-width:1.5px
+    classDef warning fill:#FFF0F0,stroke:#C53030,color:#742A2A,stroke-width:1.5px
 
-    class B,C,D,E,G aws
+    class B,C,D,E,R,G aws
     class F storage
     class A,H client
+    class V,S decision
+    class X,N warning

@@ -330,15 +330,14 @@ with st.sidebar:
 def get_s3_client():
     try:
         return boto3.client(
-               "s3",
-               region_name=AWS_REGION,
-               aws_access_key_id=st.secrets["AWS_ACCESS_KEY_ID"],
-               aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"],
-               aws_session_token=st.secrets["AWS_SESSION_TOKEN"],
+            "s3",
+            region_name=AWS_REGION,
+            aws_access_key_id=st.secrets["AWS_ACCESS_KEY_ID"],
+            aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"],
+            aws_session_token=st.secrets["AWS_SESSION_TOKEN"],
         )
     except (KeyError, FileNotFoundError):
         return boto3.client("s3", region_name=AWS_REGION)
-
 
 
 # =========================================================
@@ -451,9 +450,9 @@ try:
         rows.append(
             {
                 "Request ID": (
-                     record.get("requestId")
-                     if record.get("requestId") is not None
-                     else "Missing"
+                    record.get("requestId")
+                    if record.get("requestId") is not None
+                    else "Missing"
                 ),
                 "Timestamp": record.get("timestamp", ""),
                 "Overall Status": record.get("status", "Unknown"),
